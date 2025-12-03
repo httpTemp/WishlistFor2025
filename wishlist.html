@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>XMas Wishlist — Sev '25</title>
+
+  <style>
+    /* ------------------------
+       Variables & base
+       ------------------------ */
+    :root{
+      --bg: #2f6f58;
+      --panel: #f26a6a;
+      --card: #4ddee1;
+      --card-accent: rgba(255,255,255,0.08);
+      --accent: #7c3aed;
+      --muted: #1f2937;
+      --glass: rgba(255,255,255,0.06);
+      --shadow: 0 8px 24px rgba(15,20,30,0.18);
+      --radius: 14px;
+      --gap: 16px;
+      --max-width: 1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: linear-gradient(180deg,var(--bg), #24563f 120%);
+      color:var(--muted);
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      padding:28px 16px;
+      gap:18px;
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none!important;animation:none!important}
+    }
+
+    /* ------------------------
+       Header / controls
+       ------------------------ */
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      margin:0 auto;
+    }
+
+    header.app-header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      padding:18px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .logo {
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      background:linear-gradient(135deg,#ffe3e3,#ffd1d1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12) inset;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      color:white;
+      letter-spacing: -0.2px;
+    }
+    .brand p{margin:0;font-size:13px;color:rgba(255,255,255,0.85)}
+
+    .controls {
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* nicer select */
+    .controls select{
+      appearance:none;
+      -webkit-appearance:none;
+      border:0;
+      padding:8px 12px;
+      border-radius:10px;
+      background:var(--panel);
+      min-width:200px;
+      box-shadow: 0 4px 10px rgba(10,10,20,0.06);
+      font-size:14px;
+      color:var(--muted);
+      cursor:pointer;
+    }
+
+    /* button style */
+    .controls .btn {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:0;
+      padding:8px 12px;
+      border-radius:10px;
+      background:transparent;
+      color:var(--panel);
+      cursor:pointer;
+      font-weight:600;
+      transition: transform .14s ease, background .14s ease, opacity .12s ease;
+      background: rgba(255,255,255,0.06);
+      color: white;
+    }
+    .controls .btn:hover{ transform: translateY(-3px); background: rgba(255,255,255,0.09); }
+    .controls .btn:active{ transform: translateY(-1px); }
+
+    /* compact layout for small screens */
+    @media (max-width:720px){
+      header.app-header{ flex-direction:column; align-items:stretch; gap:12px; }
+      .controls{ justify-content:space-between; width:100%; }
+      .controls select{ min-width:130px; }
+    }
+
+    /* ------------------------
+       Main grid & cards
+       ------------------------ */
+    main.app-main{
+      width:100%;
+      max-width:var(--max-width);
+      margin:0 auto;
+      display:block;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      gap:var(--gap);
+      margin-top:12px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:12px;
+      box-shadow: 0 10px 24px rgba(8,10,20,0.12);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      cursor:pointer;
+      transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease;
+      border: 1px solid rgba(255,255,255,0.03);
+      overflow:hidden;
+    }
+
+    .card:focus-within, .card:hover{
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(8,10,20,0.22);
+    }
+
+    .card-photo{
+      width:100%;
+      height:140px;
+      object-fit:cover;
+      border-radius:8px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      flex-shrink:0;
+    }
+
+    .card-body{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .card-title{
+      margin:0;
+      font-size:15px;
+      font-weight:700;
+      color:white;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+    }
+
+    .card-meta{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+
+    .card-price{
+      margin:0;
+      font-size:13px;
+      color: rgba(255,255,255,0.9);
+      opacity:.95;
+    }
+
+    .card-want{
+      margin:0;
+      font-size:12px;
+      color: rgba(255,255,255,0.85);
+      background: var(--card-accent);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:600;
+    }
+
+    /* empty / item view */
+    .item-page{
+      background:var(--panel);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      margin:18px 0;
+    }
+    .item-page.hidden{display:none}
+    .back{
+      background:none;border:0;color:var(--accent);cursor:pointer;padding:8px 0;font-weight:700;
+    }
+
+    .item-detail{
+      display:grid;
+      grid-template-columns:320px 1fr;
+      gap:18px;
+      align-items:start;
+      margin-top:8px;
+    }
+    .item-detail img{ width:100%; height:320px; object-fit:cover; border-radius:10px; }
+
+    @media (max-width:880px){
+      .item-detail{ grid-template-columns:1fr; }
+      .item-detail img{ height:220px; }
+    }
+
+    /* footer */
+    footer{ color:rgba(255,255,255,0.8); text-align:center; padding:12px 0; font-size:13px;}
+
+    /* focus styling for accessibility */
+    :focus{ outline: 3px solid rgba(124,58,237,0.18); outline-offset:3px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="app-header" role="banner" aria-label="Wishlist header">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎄</div>
+        <div>
+          <h1>Sev's '25 Wishlist</h1>
+          <p>Gift ideas — no pressure tho ! ( BTW you can click on the cards for more details :3 )</p>
+        </div>
+      </div>
+
+      <div class="controls" role="region" aria-label="controls">
+        <label for="sortSelect" style="display:none">Sort items</label>
+        <select id="sortSelect" aria-label="Sort items">
+          <option value="want_desc">Want rating (high → low)</option>
+          <option value="price_asc">Price (low → high)</option>
+          <option value="price_desc">Price (high → low)</option>
+        </select>
+
+        <button id="clearFilters" class="btn" type="button" aria-label="Clear filters">
+          Clear
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main" id="app" role="main">
+      <section id="gridView" class="grid" aria-live="polite"></section>
+
+      <section id="itemView" class="item-page hidden" aria-hidden="true">
+        <button id="backBtn" class="back" aria-label="Back to list">← Back</button>
+        <div class="item-detail">
+          <img id="itemPhoto" src="" alt="Selected item">
+          <div class="item-meta">
+            <h2 id="itemTitle"></h2>
+            <p id="itemDesc"></p>
+            <p><strong>Price range:</strong> <span id="itemPrice"></span></p>
+            <p><strong>Want rating:</strong> <span id="itemWant"></span> / 10</p>
+            <div id="itemLinks" class="links" style="margin-top:12px"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <template id="cardTemplate">
+      <article class="card" tabindex="0">
+        <img class="card-photo" src="" alt="">
+        <div class="card-body">
+          <h3 class="card-title"></h3>
+          <div class="card-meta">
+            <p class="card-price"></p>
+            <p class="card-want"></p>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <footer>
+      <small>Gifts are not required. Your presence is the present to me 🎁</small>
+    </footer>
+  </div>
+
+  <script>
+    /* Data */
+    const items = [
+        { id: 1,
+          title: "Nothing Phone 3a (Pro or Base)",
+          photo: "https://www.gsmpro.com/cdn/shop/files/nothing-phone-3a-open-box.jpg?v=1747847576",
+          desc: "Productivity and Work Phone | I don't mind second-hand",
+          links: [{title:"Buy on Store", url:"https://digitalwalker.ph/products/nothing-phone-3a"}],
+          priceLow: 15000, priceHigh: 28000, want: 7 
+        },
+        { id: 2,
+          title: "iPad Mini (6 or 7)",
+          photo: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-mini-finish-unselect-gallery-1-202410_FMT_WHH?wid=2560&hei=1440&fmt=jpeg&qlt=90&.v=1727219498681",
+          desc: "Very good for school, work, and general productivity | I don't mind second-hand",
+          links: [{title:"Buy on Store", url:"https://www.apple.com/ph/shop/buy-ipad/ipad-mini"}],
+          priceLow: 28000, priceHigh: 41000, want: 9 
+        },
+        { id: 3,
+          title: "Sony ZVE10 Mark II or Canon EOS M50 Mark II",
+          photo: "https://www.sony.com.ph/image/99dfce63ef9348016adff347452d380b?fmt=jpeg&wid=800&qlt=43",
+          desc: "I like photos | I don't mind second-hand",
+          links: [{title:"Buy on Store", url:"https://www.henryscameraphoto.com/"}],
+          priceLow: 20000, priceHigh: 50000, want: 7 
+        },
+        { id: 4,
+          title: "Cash",
+          photo: "https://media.istockphoto.com/id/1495009751/photo/philippine-money-in-the-hand-on-a-gray-background.jpg?s=612x612&w=0&k=20&c=_wkN_Kl_kk3LHoHFQ29_0AaqevP60ho4CHTasfRz8N8=",
+          desc: "Who doesn't like money",
+          links: [{ title:"Copy GCash Number", url:"09171065673", copy:true }],
+          priceLow: 500, priceHigh: 10000, want: 10
+        },
+        { id: 5,
+          title: "Nintendo Switch (Lite or V1)",
+          photo: "https://assets.nintendo.com/image/upload/c_fill,w_1200/q_auto:best/f_auto/dpr_2.0/ncom/My%20Nintendo%20Store/EN-US/Hardware/nintendo-switch-neon-blue-neon-red-joy-con-117972/117972-nintendo-switch-neon-blue-neon-red-package-front-1200x675",
+          desc: "Gaming time ! I don't mind second-hand",
+          links: [{title:"Buy on Store", url:"https://www.henryscameraphoto.com/"}],
+          priceLow: 5000, priceHigh: 15000, want: 6
+        },
+        { id: 6,
+          title: "Clothes",
+          photo: "https://cdn11.bigcommerce.com/s-c7qlm8a06j/images/stencil/532x532/products/3207/32656/soft-boy-layered-sweatshirt_2__64633.1705238411.jpg?c=1",
+          desc: "Any indie/soft/techwear aesthetic clothing",
+          links: [{title:"Buy on Store", url:"https://www.uniqlo.com/ph/en/special-feature/holiday"}],
+          priceLow: 500, priceHigh: 1000, want: 8
+        },
+        { id: 7,
+          title: "PS5 Games or Steam Gift Card",
+          photo: "https://gmedia.playstation.com/is/image/SIEPDC/ps5-games-keyart-01-en-30aug22?$facebook$",
+          desc: "Steam Gift Cards are for PC Games, can be bought here: https://www.joytify.com/en-ph/voucher-steam-wallet | For PS5 Games, ideas are: Elden Ring, Wukong, Cyberpunk 2077",
+          links: [{title:"Buy on Store", url:"https://ecommerce.datablitz.com.ph/collections/featured-playstation-games"}],
+          priceLow: 750, priceHigh: 2000, want: 6
+        },
+        { id: 8,
+          title: "Accessories",
+          photo: "https://www.imonojewelryph.com/wp-content/uploads/2023/08/Untitled-design.png",
+          desc: "Gender neutral accessories like rings, bracelets, etc.",
+          links: [{title:"Buy on Store", url:"https://shopee.ph/"}],
+          priceLow: 100, priceHigh: 1000, want: 8
+        },
+      ];
+
+    /* Helpers */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const cardTpl = document.getElementById('cardTemplate');
+
+    function priceMedian(it){ return (it.priceLow + it.priceHigh)/2; }
+
+    /* Render grid */
+    function renderGrid(list){
+      const grid = $('#gridView');
+      grid.innerHTML = '';
+      list.forEach(it=>{
+        const node = cardTpl.content.cloneNode(true);
+        const card = node.querySelector('.card');
+        card.dataset.id = it.id;
+        const img = node.querySelector('.card-photo');
+        img.src = it.photo;
+        img.alt = it.title;
+        node.querySelector('.card-title').textContent = it.title;
+        node.querySelector('.card-price').textContent = `≈ ₱${it.priceLow} - ₱${it.priceHigh}`;
+        node.querySelector('.card-want').textContent = `Want: ${it.want}/10`;
+        grid.appendChild(node);
+      });
+
+      // attach events
+      $$('.card').forEach(c=>{
+        c.addEventListener('click', ()=> {
+          const id = c.dataset.id;
+          if(id) location.hash = `item=${id}`;
+        });
+        // keyboard friendly
+        c.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            c.click();
+          }
+        });
+      });
+    }
+
+    /* Item detail */
+    function showItem(id){
+    const it = items.find(x => x.id == id);
+    if(!it) return showGrid();
+
+    $('#itemPhoto').src = it.photo;
+    $('#itemPhoto').alt = it.title;
+    $('#itemTitle').textContent = it.title;
+    $('#itemDesc').textContent = it.desc;
+    $("#itemPrice").textContent = `₱${it.priceLow} - ₱${it.priceHigh}`;
+    $('#itemWant').textContent = it.want;
+
+    const linksWrap = $('#itemLinks');
+    linksWrap.innerHTML = '';
+
+    it.links.forEach(l => {
+        const a = document.createElement('a');
+        a.textContent = l.title;
+        a.style.display = 'inline-block';
+        a.style.marginRight = '8px';
+        a.style.padding = '8px 10px';
+        a.style.borderRadius = '8px';
+        a.style.textDecoration = 'none';
+
+        if (l.copy) {
+        // style copy button differently
+        a.href = '#';
+        a.style.background = 'white';
+        a.style.color = '#222';
+
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            // navigator.clipboard can fail on insecure contexts; handle errors
+            navigator.clipboard.writeText(l.url).then(() => {
+            const prev = a.textContent;
+            a.textContent = 'Copied ✓';
+            // brief visual feedback
+            setTimeout(() => { a.textContent = prev; }, 1500);
+            }).catch(() => {
+            // fallback: select and prompt copy (rare)
+            window.prompt('Copy this number', l.url);
+            });
+        });
+        } else {
+        // normal external link
+        a.href = l.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.style.background = 'white';
+        a.style.color = '#222';
+        }
+
+        linksWrap.appendChild(a); // <-- important: append for both cases
+    });
+
+    // toggle views (outside the loop!)
+    $('#gridView').classList.add('hidden');
+    $('#itemView').classList.remove('hidden');
+    $('#itemView').setAttribute('aria-hidden','false');
+    }
+
+    function showGrid(){
+      $('#gridView').classList.remove('hidden');
+      $('#itemView').classList.add('hidden');
+      $('#itemView').setAttribute('aria-hidden','true');
+      location.hash = '';
+    }
+
+    /* Routing */
+    function handleRouting(){
+      const hash = location.hash.slice(1);
+      if(!hash){ showGrid(); return; }
+      const m = hash.match(/item=(\d+)/);
+      if(m) showItem(parseInt(m[1],10));
+      else showGrid();
+    }
+
+    /* Controls: sort & clear */
+    const sortSelect = $('#sortSelect');
+    const clearBtn = $('#clearFilters');
+
+    function applyControls(){
+      let list = items.slice();
+      const sort = sortSelect.value;
+      if(sort === 'want_desc') list.sort((a,b)=> b.want - a.want);
+      else if(sort === 'price_asc') list.sort((a,b)=> priceMedian(a) - priceMedian(b));
+      else if(sort === 'price_desc') list.sort((a,b)=> priceMedian(b) - priceMedian(a));
+      renderGrid(list);
+    }
+
+    sortSelect.addEventListener('change', applyControls);
+    clearBtn.addEventListener('click', ()=>{
+      sortSelect.value = 'want_desc';
+      applyControls();
+    });
+
+    // back button
+    $('#backBtn').addEventListener('click', showGrid);
+
+    // init
+    renderGrid(items);
+    applyControls();
+    window.addEventListener('hashchange', handleRouting);
+    handleRouting();
+  </script>
+</body>
+</html>
