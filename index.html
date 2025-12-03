@@ -90,8 +90,16 @@
       background: rgba(0,0,0,0.55);
       z-index: 9999;
       padding:16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+    .modal[aria-hidden="false"]{
+      opacity: 1;
+      pointer-events: auto;
     }
 
+    /* dialog card */
     .item-page{
       background: white;
       color:#222;
@@ -102,6 +110,11 @@
       max-width:100%;
       max-height:90vh;
       overflow:auto;
+      transform: translateY(6px) scale(.98);
+      transition: transform .18s cubic-bezier(.2,.9,.2,1);
+    }
+    .modal[aria-hidden="false"] .item-page{
+      transform: translateY(0) scale(1);
     }
 
     .item-page.hidden{display:none}
@@ -115,8 +128,8 @@
     footer{padding:16px 0;text-align:center;color:var(--muted);font-size:13px}
 
     @media (max-width:800px){
-      .item-page{ width:100%; border-radius:12px 12px 0 0; margin:0; max-height:85vh; }
-      .modal{ align-items:center; justify-content:center; padding:16px;}
+      .item-page{ width:100%; border-radius:12px; margin:0; max-height:85vh; }
+      .modal{ align-items:center; justify-content:center; padding:12px;}
       .item-detail{grid-template-columns:1fr; gap:12px}
       .item-detail img{height:220px}
       header{flex-direction:column;align-items:stretch}
@@ -189,21 +202,21 @@
       photo: "https://www.gsmpro.com/cdn/shop/files/nothing-phone-3a-open-box.jpg?v=1747847576",
       desc: "Productivity and Work Phone | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://digitalwalker.ph/products/nothing-phone-3a"}],
-      priceLow: 15000, priceHigh: 28000, want: 7 
+      priceLow: 15000, priceHigh: 28000, want: 7
     },
     { id: 2,
       title: "iPad Mini (6 or 7)",
       photo: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-mini-finish-unselect-gallery-1-202410_FMT_WHH?wid=2560&hei=1440&fmt=jpeg&qlt=90&.v=1727219498681",
       desc: "Very good for school, work, and general productivity | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://www.apple.com/ph/shop/buy-ipad/ipad-mini"}],
-      priceLow: 28000, priceHigh: 41000, want: 9 
+      priceLow: 28000, priceHigh: 41000, want: 9
     },
     { id: 3,
       title: "Sony ZVE10 Mark II or Canon EOS M50 Mark II",
       photo: "https://www.sony.com.ph/image/99dfce63ef9348016adff347452d380b?fmt=jpeg&wid=800&qlt=43",
       desc: "I like photos | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://www.henryscameraphoto.com/"}],
-      priceLow: 20000, priceHigh: 50000, want: 7 
+      priceLow: 20000, priceHigh: 50000, want: 7
     },
     { id: 4,
       title: "Cash",
@@ -269,7 +282,11 @@
       // open modal when clicking or pressing Enter/Space
       card.addEventListener('click', ()=> openItem(it.id));
       card.addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openItem(it.id); }
+        // support Enter and Space (code and key are handled for cross-browser)
+        if(e.key === 'Enter' || e.code === 'Space' || e.key === ' '){
+          e.preventDefault();
+          openItem(it.id);
+        }
       });
 
       grid.appendChild(node);
@@ -279,6 +296,7 @@
   /* Modal open/close and rendering */
   const itemView = $('#itemView');
   const backBtn = $('#backBtn');
+  const dialog = itemView.querySelector('.item-page');
 
   function openItem(id){
     const it = items.find(x=>x.id==id);
@@ -303,29 +321,23 @@
       a.style.textDecoration = 'none';
 
       if(l.copy){
-        // copy button
         a.href = '#';
         a.style.background = '#111';
         a.style.color = '#fff';
         a.addEventListener('click', (e)=>{
           e.preventDefault();
-          // attempt clipboard
           const val = l.url;
           if(navigator.clipboard && navigator.clipboard.writeText){
             navigator.clipboard.writeText(val).then(()=>{
               const prev = a.textContent;
               a.textContent = 'Copied ✓';
               setTimeout(()=> a.textContent = prev, 1500);
-            }).catch(()=>{
-              // fallback prompt
-              window.prompt('Copy this number', val);
-            });
+            }).catch(()=> window.prompt('Copy this number', val));
           } else {
             window.prompt('Copy this number', val);
           }
         });
       } else {
-        // normal external link
         a.href = l.url;
         a.target = '_blank';
         a.rel = 'noopener';
@@ -339,7 +351,7 @@
     // show modal
     itemView.classList.remove('hidden');
     itemView.setAttribute('aria-hidden','false');
-    // trap focus: move focus to close button
+    // move focus to close button for accessibility
     backBtn.focus();
     // prevent background scroll
     document.documentElement.style.overflow = 'hidden';
@@ -351,17 +363,21 @@
     document.documentElement.style.overflow = '';
   }
 
-  // close handlers
+  // close button
   backBtn.addEventListener('click', closeItem);
-  // click outside modal content closes it
+
+  // click on backdrop closes: check if click is outside the dialog box
   itemView.addEventListener('click', (e)=>{
-    if(e.target === itemView) closeItem();
-  });
-  // Escape key closes
-  document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape' && !itemView.classList.contains('hidden')) closeItem();
+    // If the clicked element is NOT inside the dialog, close it.
+    if(!dialog.contains(e.target)){
+      closeItem();
+    }
   });
 
+  // Escape key closes
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && itemView.getAttribute('aria-hidden') === 'false') closeItem();
+  });
 
   /* Controls: sort & ratio & clear */
   const sortSelect = $('#sortSelect');
@@ -409,4 +425,3 @@
   </script>
 </body>
 </html>
-
