@@ -90,49 +90,49 @@
       background: rgba(0,0,0,0.55);
       z-index: 9999;
       padding:16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .18s ease;
-    }
-    .modal[aria-hidden="false"]{
-      opacity: 1;
-      pointer-events: auto;
     }
 
-    /* dialog card */
+    .modal.hidden { display: none; }
+
+    .hidden { display: none !important; }
+
     .item-page{
-      background: white;
+      background: #cf6e6e;
       color:#222;
       padding:18px;
       border-radius:12px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-      width: 880px;
-      max-width:100%;
-      max-height:90vh;
+
+      width: min(880px, 95%);
+      max-width: 95%;
+      max-height: 90vh;
       overflow:auto;
-      transform: translateY(6px) scale(.98);
-      transition: transform .18s cubic-bezier(.2,.9,.2,1);
-    }
-    .modal[aria-hidden="false"] .item-page{
-      transform: translateY(0) scale(1);
+
+      transform-origin: center;
     }
 
     .item-page.hidden{display:none}
     .back{background:none;border:0;color:var(--accent);cursor:pointer;padding:8px 0;font-weight:600}
 
-    .item-detail{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start}
+    .item-detail{
+      display:grid;
+      grid-template-columns: minmax(220px, 360px) 1fr;
+      gap:18px;
+      align-items:center;
+    }
     .item-detail img{width:100%;height:360px;object-fit:cover;border-radius:12px}
     .item-meta h2{margin-top:0}
     .links a{display:inline-block;margin-right:8px;margin-top:8px;padding:8px 12px;border-radius:8px;border:1px solid #e6e9ef;text-decoration:none;background:#fff;color:#222}
 
+    .links button { display:inline-block; margin-right:8px; margin-top:8px; padding:8px 12px; border-radius:8px; border:1px solid #e6e9ef; background:#111; color:#fff; cursor:pointer }
+
     footer{padding:16px 0;text-align:center;color:var(--muted);font-size:13px}
 
     @media (max-width:800px){
-      .item-page{ width:100%; border-radius:12px; margin:0; max-height:85vh; }
-      .modal{ align-items:center; justify-content:center; padding:12px;}
-      .item-detail{grid-template-columns:1fr; gap:12px}
-      .item-detail img{height:220px}
-      header{flex-direction:column;align-items:stretch}
+      .item-page{ width:100%; border-radius:12px 12px 0 0; margin:0; max-height:85vh; }
+      .modal{ align-items:center; padding:12px; }
+      .item-detail{ grid-template-columns: 1fr; gap:12px; align-items:start; }
+      .item-detail img{ height:220px; width:100%; object-fit:cover; }
     }
   </style>
 </head>
@@ -147,11 +147,6 @@
             <option value="price_asc">Price (low → high)</option>
             <option value="price_desc">Price (high → low)</option>
           </select>
-        </label>
-
-        <label>Max price-to-want ratio:
-          <input id="ratioRange" type="range" min="0" max="100" value="100">
-          <span id="ratioValue">100</span>
         </label>
 
         <button id="clearFilters">Clear filters</button>
@@ -202,21 +197,21 @@
       photo: "https://www.gsmpro.com/cdn/shop/files/nothing-phone-3a-open-box.jpg?v=1747847576",
       desc: "Productivity and Work Phone | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://digitalwalker.ph/products/nothing-phone-3a"}],
-      priceLow: 15000, priceHigh: 28000, want: 7
+      priceLow: 15000, priceHigh: 28000, want: 7 
     },
     { id: 2,
       title: "iPad Mini (6 or 7)",
       photo: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/ipad-mini-finish-unselect-gallery-1-202410_FMT_WHH?wid=2560&hei=1440&fmt=jpeg&qlt=90&.v=1727219498681",
       desc: "Very good for school, work, and general productivity | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://www.apple.com/ph/shop/buy-ipad/ipad-mini"}],
-      priceLow: 28000, priceHigh: 41000, want: 9
+      priceLow: 28000, priceHigh: 41000, want: 9 
     },
     { id: 3,
       title: "Sony ZVE10 Mark II or Canon EOS M50 Mark II",
       photo: "https://www.sony.com.ph/image/99dfce63ef9348016adff347452d380b?fmt=jpeg&wid=800&qlt=43",
       desc: "I like photos | I don't mind second-hand",
       links: [{title:"Buy on Store", url:"https://www.henryscameraphoto.com/"}],
-      priceLow: 20000, priceHigh: 50000, want: 7
+      priceLow: 20000, priceHigh: 50000, want: 7 
     },
     { id: 4,
       title: "Cash",
@@ -279,28 +274,25 @@
       node.querySelector('.card-price').textContent = `≈ ₱${it.priceLow} - ₱${it.priceHigh}`;
       node.querySelector('.card-want').textContent = `Want: ${it.want}/10 — P/W: ${priceToWantRatio(it)}`;
 
-      // open modal when clicking or pressing Enter/Space
       card.addEventListener('click', ()=> openItem(it.id));
       card.addEventListener('keydown', (e)=>{
-        // support Enter and Space (code and key are handled for cross-browser)
-        if(e.key === 'Enter' || e.code === 'Space' || e.key === ' '){
-          e.preventDefault();
-          openItem(it.id);
-        }
+        if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar' || e.code === 'Space') { e.preventDefault(); openItem(it.id); }
       });
 
       grid.appendChild(node);
     });
   }
 
-  /* Modal open/close and rendering */
   const itemView = $('#itemView');
   const backBtn = $('#backBtn');
-  const dialog = itemView.querySelector('.item-page');
+  let prevActiveEl = null;
 
   function openItem(id){
     const it = items.find(x=>x.id==id);
     if(!it) return;
+
+    prevActiveEl = document.activeElement;
+
     $('#itemPhoto').src = it.photo;
     $('#itemPhoto').alt = it.title;
     $('#itemTitle').textContent = it.title;
@@ -312,48 +304,38 @@
     linksWrap.innerHTML = '';
 
     it.links.forEach(l=>{
-      const a = document.createElement('a');
-      a.textContent = l.title;
-      a.style.display = 'inline-block';
-      a.style.marginRight = '8px';
-      a.style.padding = '8px 10px';
-      a.style.borderRadius = '8px';
-      a.style.textDecoration = 'none';
-
       if(l.copy){
-        a.href = '#';
-        a.style.background = '#111';
-        a.style.color = '#fff';
-        a.addEventListener('click', (e)=>{
-          e.preventDefault();
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = l.title || 'Copy';
+        btn.addEventListener('click', ()=>{
           const val = l.url;
           if(navigator.clipboard && navigator.clipboard.writeText){
             navigator.clipboard.writeText(val).then(()=>{
-              const prev = a.textContent;
-              a.textContent = 'Copied ✓';
-              setTimeout(()=> a.textContent = prev, 1500);
-            }).catch(()=> window.prompt('Copy this number', val));
+              const prev = btn.textContent;
+              btn.textContent = 'Copied ✓';
+              setTimeout(()=> btn.textContent = prev, 1500);
+            }).catch(()=>{
+              window.prompt('Copy this', val);
+            });
           } else {
-            window.prompt('Copy this number', val);
+            window.prompt('Copy this', val);
           }
         });
+        linksWrap.appendChild(btn);
       } else {
+        const a = document.createElement('a');
+        a.textContent = l.title;
         a.href = l.url;
         a.target = '_blank';
         a.rel = 'noopener';
-        a.style.background = '#fff';
-        a.style.color = '#222';
+        linksWrap.appendChild(a);
       }
-
-      linksWrap.appendChild(a);
     });
 
-    // show modal
     itemView.classList.remove('hidden');
     itemView.setAttribute('aria-hidden','false');
-    // move focus to close button for accessibility
     backBtn.focus();
-    // prevent background scroll
     document.documentElement.style.overflow = 'hidden';
   }
 
@@ -361,36 +343,23 @@
     itemView.classList.add('hidden');
     itemView.setAttribute('aria-hidden','true');
     document.documentElement.style.overflow = '';
+    if(prevActiveEl && typeof prevActiveEl.focus === 'function') prevActiveEl.focus();
   }
 
-  // close button
   backBtn.addEventListener('click', closeItem);
-
-  // click on backdrop closes: check if click is outside the dialog box
   itemView.addEventListener('click', (e)=>{
-    // If the clicked element is NOT inside the dialog, close it.
-    if(!dialog.contains(e.target)){
-      closeItem();
-    }
+    if(e.target === itemView) closeItem();
   });
-
-  // Escape key closes
   document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape' && itemView.getAttribute('aria-hidden') === 'false') closeItem();
+    if(e.key === 'Escape' && !itemView.classList.contains('hidden')) closeItem();
   });
 
-  /* Controls: sort & ratio & clear */
+
   const sortSelect = $('#sortSelect');
-  const ratioRange = $('#ratioRange');
-  const ratioValue = $('#ratioValue');
   const clearBtn = $('#clearFilters');
 
   function applyControls(){
     let list = items.slice();
-
-    // filter by price-to-want ratio (max)
-    const maxRatio = Number(ratioRange.value);
-    list = list.filter(it => priceToWantRatio(it) <= maxRatio);
 
     // sorting
     const sort = sortSelect.value;
@@ -407,20 +376,12 @@
 
   // UI events
   sortSelect.addEventListener('change', applyControls);
-  ratioRange.addEventListener('input', ()=>{
-    ratioValue.textContent = ratioRange.value;
-    applyControls();
-  });
   clearBtn.addEventListener('click', ()=>{
-    ratioRange.value = 100;
-    ratioValue.textContent = 100;
     sortSelect.value = 'want_desc';
     applyControls();
   });
 
   // initial
-  ratioValue.textContent = ratioRange.value;
-  renderGrid(items);
   applyControls();
   </script>
 </body>
